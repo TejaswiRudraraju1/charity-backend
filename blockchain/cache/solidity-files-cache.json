@@ -1,0 +1,40 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "C:\\Users\\tejas\\OneDrive\\Desktop\\project\\blockchain\\contracts\\DonationRegistry.sol": {
+      "lastModificationDate": 1764951209546,
+      "contentHash": "cfa521fa8f9293eafe1396f3f890ae16",
+      "sourceName": "contracts/DonationRegistry.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "DonationRegistry"
+      ]
+    }
+  }
+}
