@@ -69,10 +69,17 @@ async function request<T>(
     Object.assign(headers, options.headers);
   }
   
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-  });
+  // Add timeout for fetch requests (10 seconds)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  
+  try {
+    const res = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
