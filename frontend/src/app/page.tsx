@@ -4,9 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchCauses, type Cause } from "../lib/api";
 
-// Force dynamic rendering - don't pre-render this page
-export const dynamic = 'force-dynamic';
-
 export default function Home() {
   const [causes, setCauses] = useState<Cause[]>([]);
   const [loadingCauses, setLoadingCauses] = useState(true);
