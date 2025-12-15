@@ -81,12 +81,19 @@ async function request<T>(
     });
     clearTimeout(timeoutId);
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const message = (data && (data.message || data.error)) || "Request failed";
-    throw new Error(message);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const message = (data && (data.message || data.error)) || "Request failed";
+      throw new Error(message);
+    }
+    return data as T;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout - server took too long to respond');
+    }
+    throw error;
   }
-  return data as T;
 }
 
 export async function registerUser(input: {
