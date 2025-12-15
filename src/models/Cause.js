@@ -7,9 +7,20 @@ const causeSchema = new mongoose.Schema({
   currentAmount: { type: Number, default: 0 },
   location: { type: String },
   volunteersRequired: { type: Number, default: 0 },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // NGO who created
+  volunteers: [
+    {
+      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      joinedAt: { type: Date, default: Date.now },
+    },
+  ],
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  }, // NGO who created
   status: { type: String, enum: ["active", "completed"], default: "active" },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Cause", causeSchema);
+

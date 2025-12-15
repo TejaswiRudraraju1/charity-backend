@@ -22,8 +22,8 @@ async function register(req, res) {
 
     return res.status(201).json({ success:true, user: safeUser, token });
   } catch (err) {
-    console.error("auth.register err:", err);
-    return res.status(500).json({ success:false, message: "Server error" });
+    console.error("auth.register err:", err.message, err.stack);
+    return res.status(500).json({ success:false, message: err.message || "Server error" });
   }
 }
 
@@ -45,8 +45,8 @@ async function login(req, res) {
 
     return res.json({ success:true, user: safeUser, token });
   } catch (err) {
-    console.error("auth.login err:", err);
-    return res.status(500).json({ success:false, message: "Server error" });
+    console.error("auth.login err:", err.message, err.stack);
+    return res.status(500).json({ success:false, message: err.message || "Server error" });
   }
 }
 

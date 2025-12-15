@@ -1,5 +1,6 @@
 ﻿const Donation = require("../models/Donation");
 const keccak256 = require("keccak256");
+const { recordDonationOnChain } = require("../services/blockchainService");
 
 // POST /api/donations/create  (donor, authenticated)
 async function createDonationIntent(req, res) {
@@ -32,7 +33,7 @@ async function createDonationIntent(req, res) {
 async function verifyDonation(req, res) {
   try {
     const { donationId, status, txDetails } = req.body;
-    const donation = await Donation.findById(donationId);
+    const donation = await Donation.findById(donationId).populate("causeId");
     if (!donation) return res.status(404).json({ success: false, message: "Donation not found" });
 
     donation.paymentGateway.rawResponse = txDetails || {};
@@ -50,6 +51,25 @@ async function verifyDonation(req, res) {
 
       const hash = "0x" + keccak256(Buffer.from(toHash)).toString("hex");
       donation.hash = hash;
+
+      // Update cause's currentAmount
+      if (donation.causeId) {
+        donation.causeId.currentAmount = (donation.causeId.currentAmount || 0) + donation.amount;
+        await donation.causeId.save();
+      }
+
+      // Best-effort on-chain record
+      try {
+        const txHash = await recordDonationOnChain({
+          entityId: donation._id.toString(),
+          hash,
+        });
+        if (txHash) {
+          donation.onChainTx = txHash;
+        }
+      } catch (chainErr) {
+        console.error("On-chain record failed:", chainErr.message);
+      }
     }
 
     await donation.save();
@@ -60,4 +80,27 @@ async function verifyDonation(req, res) {
   }
 }
 
-module.exports = { createDonationIntent, verifyDonation };
+// GET /api/donations/my  (authenticated user - donor history)
+async function listMyDonations(req, res) {
+  try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
+    }
+
+    const donations = await Donation.find({ donorId: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate("causeId", "title description");
+
+    return res.json({ success: true, donations });
+  } catch (err) {
+    console.error("listMyDonations err:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error" });
+  }
+}
+
+module.exports = { createDonationIntent, verifyDonation, listMyDonations };
+
