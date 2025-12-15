@@ -9,6 +9,9 @@ export default function Home() {
   const [loadingCauses, setLoadingCauses] = useState(true);
 
   useEffect(() => {
+    // Only fetch on client side, not during SSR/build
+    if (typeof window === "undefined") return;
+    
     fetchCauses()
       .then((data) => {
         setCauses(data.causes.slice(0, 4));
