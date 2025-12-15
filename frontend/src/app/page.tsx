@@ -9,19 +9,21 @@ export default function Home() {
   const [loadingCauses, setLoadingCauses] = useState(true);
 
   useEffect(() => {
-    // Only fetch on client side, not during SSR/build
-    if (typeof window === "undefined") return;
+    // Only fetch after component mounts (client-side only)
+    const timer = setTimeout(() => {
+      fetchCauses()
+        .then((data) => {
+          setCauses(data.causes.slice(0, 4));
+        })
+        .catch(() => {
+          // Silently fail - causes will just be empty
+        })
+        .finally(() => {
+          setLoadingCauses(false);
+        });
+    }, 0);
     
-    fetchCauses()
-      .then((data) => {
-        setCauses(data.causes.slice(0, 4));
-      })
-      .catch(() => {
-        // Silently fail - causes will just be empty
-      })
-      .finally(() => {
-        setLoadingCauses(false);
-      });
+    return () => clearTimeout(timer);
   }, []);
 
   return (
