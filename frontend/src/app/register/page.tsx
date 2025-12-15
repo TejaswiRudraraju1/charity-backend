@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { registerUser, type UserRole } from "../../lib/api";
@@ -8,7 +8,7 @@ import { useAuth } from "../../components/AuthContext";
 
 const roles: UserRole[] = ["volunteer", "ngo", "donor"];
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
   const params = useSearchParams();
   const { setUser } = useAuth();
@@ -144,4 +144,15 @@ export default function RegisterPage() {
   );
 }
 
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-zinc-50">
+        <p>Loading...</p>
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
+  );
+}
 
