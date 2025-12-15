@@ -6,7 +6,12 @@ const app = express();
 
 // CORS configuration for production
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "*", // Allow all origins in dev, set specific in production
+  origin: [
+    "https://frontend-3g95og4vw-tejaswi-rudrarajus-projects.vercel.app",
+    "https://frontend-flax-iota-15.vercel.app",
+    "http://localhost:3000",
+    process.env.FRONTEND_URL || "*"
+  ].filter(Boolean),
   credentials: true,
   optionsSuccessStatus: 200,
 };
